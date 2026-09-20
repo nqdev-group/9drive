@@ -1,0 +1,26 @@
+# Dependencies
+**/node_modules/
+
+# Build output
+backend/dist/
+frontend/dist/
+
+# Generated Prisma client
+backend/node_modules/.prisma/
+backend/generated/
+
+# Secrets and local env
+.env
+.env.*
+backend/.env
+backend/.env.*
+frontend/.env.local
+frontend/.env.*.local
+
+# Logs and local databases
+*.log
+*.db
+*.db-journal
+
+# OS/editor cruft
+.DS_Store
