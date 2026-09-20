@@ -1,0 +1,16 @@
+name: 9drive
+id: ari:cloud:compass:d080ee26-f21d-4730-84de-98c025104c05:component/e09ef9ad-8d69-4877-b0ee-7395c9ca13a3/49e15639-728c-4980-8799-59eeb9f6c27b
+description: 9Drive is a storage gateway web app for connecting multiple Google Drive accounts into one virtual storage dashboard. Users can connect Google Drive accounts, track quota, upload files, organize files with virtual folders, preview files, and let the backend route uploads to the Drive account with enough free space.
+configVersion: 1
+typeId: SERVICE
+fields:
+  tier: 4
+links:
+  - name: null
+    type: REPOSITORY
+    url: https://github.com/nqdev-group/9drive
+relationships:
+  DEPENDS_ON: []
+labels:
+  - source:github
+customFields: null
