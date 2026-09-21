@@ -7,6 +7,8 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-9drive}
       MYSQL_USER: ${MYSQL_USER:-9drive}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change-this-database-password}
+    ports:
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:

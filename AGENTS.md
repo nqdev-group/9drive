@@ -8,6 +8,7 @@
 
 - `backend/`: Express API, TypeScript, Prisma schema/migrations, MySQL access, auth, Google OAuth/Drive integration.
 - `frontend/`: Vite React app, protected dashboard UI, file/folder management, sharing, uploads, quota/settings pages.
+- `package.json` / `turbo.json` / `yarn.lock`: root Yarn workspaces + Turborepo config; `backend` and `frontend` are the two workspaces.
 - `docker-compose.yml`: MySQL, backend, and nginx-served frontend services.
 - `.env.docker.example`: Docker environment template.
 - `README.md`: local setup, Google Cloud setup, Docker notes, deployment notes.
@@ -15,10 +16,18 @@
 ## Requirements
 
 - Node.js 20+
-- npm
+- Yarn 4 (pinned via root `packageManager`; install with `corepack enable` if `yarn -v` doesn't match)
 - MySQL 8+
 - Google Cloud project with Google Drive API enabled
 - Google OAuth client ID and secret
+
+## Root / Monorepo
+
+- Install once from the repo root: `yarn install` (do not run `npm install` in `backend/` or `frontend/` — there is no per-package lockfile, only the root `yarn.lock`).
+- `yarn dev` — runs `turbo run dev`, starting `backend` and `frontend` dev servers together.
+- `yarn build` — runs `turbo run build` across both workspaces; `build` task outputs are cached by Turborepo (`dist/**`).
+- To target one workspace directly: `yarn workspace backend <script>` / `yarn workspace frontend <script>` (equivalent to the `cd backend && npm run <script>` commands below, but keeps the single root lockfile authoritative).
+- `.turbo/` and `.yarn/install-state.gz` are Turborepo/Yarn local cache state — already gitignored, never commit them.
 
 ## Backend
 

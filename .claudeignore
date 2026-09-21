@@ -1,9 +1,11 @@
 # Dependencies
 **/node_modules/
+.yarn/install-state.gz
 
-# Build output
+# Build output / Turborepo cache
 backend/dist/
 frontend/dist/
+.turbo/
 
 # Generated Prisma client
 backend/node_modules/.prisma/
