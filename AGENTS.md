@@ -48,9 +48,11 @@ Important files:
 - `backend/src/app.ts`: Express app and route mounting.
 - `backend/src/config/env.ts`: environment validation.
 - `backend/src/config/prisma.ts`: Prisma client.
+- `backend/src/config/logger.ts`: Winston logger, daily-rotating log files (7-day retention).
 - `backend/prisma/schema.prisma`: database schema.
 - `backend/src/middleware/auth.middleware.ts`: bearer auth.
-- `backend/src/middleware/error.middleware.ts`: JSON error responses.
+- `backend/src/middleware/error.middleware.ts`: JSON error responses, logs unexpected errors.
+- `backend/src/middleware/request-logger.middleware.ts`: HTTP access logging.
 - `backend/src/modules/**`: feature route modules and provider services.
 - `backend/src/modules/files/stream-google-file.ts`: Google file preview/download streaming.
 - `backend/src/scripts/seed-google-config.ts`: stores encrypted global Google OAuth config.
@@ -76,6 +78,8 @@ Environment:
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 - `GOOGLE_REDIRECT_URI`
+- `LOG_LEVEL` (optional; default `http`, one of `error`/`warn`/`info`/`http`/`debug`)
+- `LOG_DIR` (optional; default `logs`, directory for rotating log files)
 
 Backend conventions:
 - Put route logic under `backend/src/modules/<feature>/<feature>.routes.ts`.

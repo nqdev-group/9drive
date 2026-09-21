@@ -13,6 +13,8 @@ const envSchema = z.object({
   REFRESH_TOKEN_TTL_DAYS: z.coerce.number().default(30),
   MAX_UPLOAD_BYTES: z.coerce.number().default(5 * 1024 * 1024 * 1024),
   RECAPTCHA_SECRET_KEY: z.string().optional(),
+  LOG_LEVEL: z.enum(['error', 'warn', 'info', 'http', 'debug']).default('http'),
+  LOG_DIR: z.string().default('logs'),
 })
 
 export const env = envSchema.parse(process.env)
