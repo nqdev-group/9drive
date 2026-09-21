@@ -35,7 +35,9 @@
   // flagWords - list of words to be always considered incorrect
   // This is useful for offensive words and common spelling errors.
   // For example "hte" should be "the"
-  "flagWords": ["hte"],
+  "flagWords": [
+    "hte"
+  ],
   // ignoreWords - a list of words to be ignored (even if they are in the flagWords)
   "ignoreWords": [],
   // ignorePaths - a list of globs to specify which files are to be ignored.
@@ -48,7 +50,11 @@
     "node_modules/**"
   ],
   // Enable your dictionary by adding it to the list of `dictionaries`
-  "dictionaries": ["internal-terms", "vi-dictionary", "code-dictionary"],
+  "dictionaries": [
+    "internal-terms",
+    "vi-dictionary",
+    "code-dictionary"
+  ],
   // Tell CSpell about your dictionary
   "dictionaryDefinitions": [
     {
