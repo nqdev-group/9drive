@@ -1,0 +1,16 @@
+{
+  "name": "9drive",
+  "private": true,
+  "packageManager": "yarn@4.17.0",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0"
+  }
+}
