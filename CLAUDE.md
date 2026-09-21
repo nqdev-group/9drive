@@ -9,6 +9,7 @@ This repo uses scoped `CLAUDE.md` files. When working inside a directory, read t
     - [backend/src/modules/CLAUDE.md](backend/src/modules/CLAUDE.md) — feature-module pattern and module index
       - [backend/src/modules/files/CLAUDE.md](backend/src/modules/files/CLAUDE.md) — file records, sharing, preview/download streaming
       - [backend/src/modules/uploads/CLAUDE.md](backend/src/modules/uploads/CLAUDE.md) — multipart upload routing/streaming
+  - [backend/prisma/CLAUDE.md](backend/prisma/CLAUDE.md) — MySQL schema conventions and migration workflow
 - [frontend/CLAUDE.md](frontend/CLAUDE.md) — Vite/React/TypeScript dashboard
   - [frontend/src/CLAUDE.md](frontend/src/CLAUDE.md) — source layout (pages/components/lib/context/layouts)
     - [frontend/src/pages/CLAUDE.md](frontend/src/pages/CLAUDE.md) — route-level pages

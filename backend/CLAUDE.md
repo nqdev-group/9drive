@@ -17,11 +17,11 @@ Scope: everything under `backend/`. See root `AGENTS.md` for the full stack list
 ## Directories
 
 - `src/config/` — `env.ts` (Zod-validated env), `prisma.ts` (shared Prisma client singleton).
-- `src/middleware/` — `auth.middleware.ts` (bearer JWT → `AuthRequest.user`), `error.middleware.ts` (JSON error shape, mounted last in `app.ts`).
+- `src/middleware/` — `auth.middleware.ts` (bearer JWT → `AuthRequest.user`), `api-key.middleware.ts` (API-key auth for `public-api`), `error.middleware.ts` (JSON error shape, mounted last in `app.ts`).
 - `src/modules/` — one folder per feature; see [src/modules/CLAUDE.md](src/modules/CLAUDE.md).
 - `src/scripts/` — one-off/CLI scripts run via `tsx` (`seed-google-config.ts`, `test-s3-connection.ts`, `test-api-upload.ts`), not part of the request path.
 - `src/utils/` — shared pure helpers (e.g. bigint→string JSON conversion, encryption helpers).
-- `prisma/schema.prisma` + `prisma/migrations/` — MySQL schema, one directory per migration; never edit an already-applied migration file.
+- `prisma/` — MySQL schema + migrations; see [prisma/CLAUDE.md](prisma/CLAUDE.md).
 
 ## Local conventions
 
