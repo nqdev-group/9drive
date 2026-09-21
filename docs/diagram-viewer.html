@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>9Drive — Diagram Viewer</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #161922; --panel-2: #1d212c; --border: #2a2f3b;
+    --text: #e6e8ee; --text-dim: #9aa1b1; --accent: #5b8def; --accent-2: #6ee7b7;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Inter, sans-serif; background: var(--bg); color: var(--text); }
+  header { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 1.25rem; background: var(--panel); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
+  header h1 { font-size: 1.05rem; margin: 0; font-weight: 600; }
+  header .sub { color: var(--text-dim); font-size: 0.8rem; }
+  .layout { display: flex; min-height: calc(100vh - 58px); }
+  nav.sidebar { width: 240px; flex-shrink: 0; background: var(--panel); border-right: 1px solid var(--border); padding: 0.75rem; }
+  nav.sidebar button { display: block; width: 100%; text-align: left; padding: 0.6rem 0.75rem; margin-bottom: 0.35rem; background: transparent; border: 1px solid transparent; border-radius: 8px; color: var(--text-dim); cursor: pointer; font-size: 0.88rem; }
+  nav.sidebar button:hover { background: var(--panel-2); color: var(--text); }
+  nav.sidebar button.active { background: var(--panel-2); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+  main { flex: 1; padding: 1.25rem 1.5rem; overflow: auto; }
+  .toolbar { display: flex; gap: 0.5rem; margin-bottom: 0.9rem; }
+  .toolbar button { background: var(--panel-2); border: 1px solid var(--border); color: var(--text); padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; }
+  .toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+  .diagram-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; overflow: auto; min-height: 300px; }
+  .diagram-card svg { max-width: 100%; height: auto; }
+  #zoom-wrap { transform-origin: top left; transition: transform 0.1s ease; }
+  .empty { color: var(--text-dim); padding: 2rem; text-align: center; }
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    nav.sidebar { width: 100%; display: flex; overflow-x: auto; gap: 0.4rem; border-right: none; border-bottom: 1px solid var(--border); }
+    nav.sidebar button { width: auto; white-space: nowrap; margin-bottom: 0; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>9Drive — Diagrams</h1>
+  <span class="sub">rendered live from docs/diagrams/*.mermaid — must be served over http(s), not file://</span>
+</header>
+<div class="layout">
+  <nav class="sidebar" id="nav"></nav>
+  <main>
+    <div class="toolbar">
+      <button id="zoom-in">Zoom +</button>
+      <button id="zoom-out">Zoom −</button>
+      <button id="zoom-reset">Reset</button>
+      <button id="copy-src">Copy source</button>
+      <button id="download-svg">Download SVG</button>
+    </div>
+    <div class="diagram-card"><div id="zoom-wrap"><div id="render-target" class="empty">Select a diagram from the left.</div></div></div>
+  </main>
+</div>
+<script>
+mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });
+
+const DIAGRAMS = [
+  { id: 'architecture', title: 'Architecture', file: 'diagrams/architecture-diagram.mermaid' },
+  { id: 'workflow', title: 'Upload Workflow', file: 'diagrams/workflow-diagram.mermaid' },
+  { id: 'component', title: 'Component Map', file: 'diagrams/component-diagram.mermaid' },
+  { id: 'sequence', title: 'Auth Sequence', file: 'diagrams/sequence-diagram.mermaid' },
+];
+
+let currentSource = '';
+let zoom = 1;
+
+const nav = document.getElementById('nav');
+const target = document.getElementById('render-target');
+const wrap = document.getElementById('zoom-wrap');
+
+function renderNav(activeId) {
+  nav.innerHTML = '';
+  for (const d of DIAGRAMS) {
+    const btn = document.createElement('button');
+    btn.textContent = d.title;
+    btn.className = d.id === activeId ? 'active' : '';
+    btn.onclick = () => loadDiagram(d);
+    nav.appendChild(btn);
+  }
+}
+
+async function loadDiagram(d) {
+  renderNav(d.id);
+  target.className = '';
+  target.textContent = 'Loading…';
+  try {
+    const res = await fetch(d.file);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    currentSource = await res.text();
+    const { svg } = await mermaid.render('mermaid-svg-' + d.id, currentSource);
+    target.innerHTML = svg;
+    zoom = 1;
+    wrap.style.transform = 'scale(1)';
+  } catch (err) {
+    target.className = 'empty';
+    target.textContent = 'Failed to load/render ' + d.file + ' — ' + err.message +
+      (location.protocol === 'file:' ? ' (this viewer must be served over http://, not opened directly as a file — see docs/view-docs.bat)' : '');
+  }
+}
+
+document.getElementById('zoom-in').onclick = () => { zoom = Math.min(zoom + 0.15, 3); wrap.style.transform = `scale(${zoom})`; };
+document.getElementById('zoom-out').onclick = () => { zoom = Math.max(zoom - 0.15, 0.3); wrap.style.transform = `scale(${zoom})`; };
+document.getElementById('zoom-reset').onclick = () => { zoom = 1; wrap.style.transform = 'scale(1)'; };
+document.getElementById('copy-src').onclick = () => { if (currentSource) navigator.clipboard.writeText(currentSource); };
+document.getElementById('download-svg').onclick = () => {
+  const svgEl = target.querySelector('svg');
+  if (!svgEl) return;
+  const blob = new Blob([svgEl.outerHTML], { type: 'image/svg+xml' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'diagram.svg';
+  a.click();
+};
+
+renderNav(null);
+loadDiagram(DIAGRAMS[0]);
+</script>
+</body>
+</html>

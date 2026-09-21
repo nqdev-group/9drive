@@ -1,0 +1,52 @@
+graph LR
+    subgraph FrontendApp["frontend/src"]
+        Pages["pages/<br/>AllFilesPage, SettingsPage,<br/>QuotaTrackerPage, SharedPage,<br/>PublicFilePage, ..."]
+        Layouts["layouts/DriveLayout<br/>protected app shell"]
+        CompDrive["components/drive/<br/>FileTable, FileGrid, FolderGrid,<br/>context menus, details drawer"]
+        CompUI["components/ui/<br/>Button, Card, Input"]
+        Lib["lib/<br/>api.ts (apiFetch + refresh),<br/>auth.ts (session storage),<br/>preview.ts, plyr.ts"]
+    end
+
+    subgraph BackendApp["backend/src"]
+        AppTs["app.ts<br/>router mounting"]
+        MidAuth["middleware/<br/>auth.middleware, api-key.middleware,<br/>error.middleware"]
+        ModAuth["modules/auth"]
+        ModConn["modules/connected-accounts"]
+        ModProv["modules/provider-configs"]
+        ModGoogle["modules/google<br/>(service only)"]
+        ModS3["modules/s3<br/>(service only)"]
+        ModStorage["modules/storage"]
+        ModUploads["modules/uploads"]
+        ModFiles["modules/files"]
+        ModFolders["modules/folders"]
+        ModInvites["modules/invites"]
+        ModApiKeys["modules/api-keys"]
+        ModPublicApi["modules/public-api"]
+        ModPublic["modules/public"]
+        ModAudit["modules/audit-logs"]
+        ModSystem["modules/system"]
+        Prisma["config/prisma.ts<br/>Prisma client singleton"]
+    end
+
+    Pages --> Layouts
+    Pages --> CompDrive
+    CompDrive --> CompUI
+    Pages --> Lib
+    CompDrive --> Lib
+
+    Lib -->|"fetch / XHR"| AppTs
+    AppTs --> MidAuth
+    MidAuth --> ModAuth & ModConn & ModProv & ModStorage & ModUploads & ModFiles & ModFolders & ModInvites & ModApiKeys & ModAudit & ModSystem
+    MidAuth --> ModPublicApi
+    ModPublicApi --> ModUploads
+    AppTs --> ModPublic
+
+    ModConn --> ModGoogle
+    ModConn --> ModS3
+    ModUploads --> ModGoogle
+    ModUploads --> ModS3
+    ModFiles --> ModGoogle
+    ModFiles --> ModS3
+    ModStorage --> ModS3
+
+    ModAuth & ModConn & ModProv & ModStorage & ModUploads & ModFiles & ModFolders & ModInvites & ModApiKeys & ModAudit & ModSystem & ModPublic --> Prisma

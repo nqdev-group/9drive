@@ -1,0 +1,33 @@
+sequenceDiagram
+    participant U as User Browser
+    participant FE as Frontend (SPA)
+    participant BE as Backend (auth.routes.ts)
+    participant G as Google OAuth/Drive
+
+    U->>FE: Click "Sign in with Google"
+    FE->>BE: GET /auth/google/url
+    BE->>BE: Create OauthState (single-use, 10 min TTL)
+    BE-->>FE: { url: Google consent URL }
+    FE->>U: Redirect to Google consent screen
+    U->>G: Approve access
+    G-->>BE: GET /auth/google/callback?code&state
+
+    BE->>BE: Validate OauthState (flow=login, unused, not expired)
+    BE->>G: Exchange code for tokens
+    G-->>BE: access_token, refresh_token, id info
+    BE->>G: oauth2.userinfo.get()
+    G-->>BE: profile (id, email, name, picture)
+
+    BE->>BE: upsert User by email
+    BE->>BE: upsert ConnectedAccount (provider=google_drive)<br/>encrypt + store tokens
+    BE->>G: syncGoogleQuota() [best-effort, errors ignored]
+    BE->>BE: create AuthHandoff (one-time, 5 min TTL)
+    BE-->>U: Redirect to FRONTEND_URL/google-auth?token=<handoff>
+
+    U->>FE: Loads /google-auth?token=...
+    FE->>BE: POST /auth/google/exchange { token }
+    BE->>BE: Validate + consume AuthHandoff
+    BE->>BE: createSession() -> access JWT + refresh token
+    BE-->>FE: { accessToken, refreshToken, user }
+    FE->>FE: Store session (lib/auth.ts)
+    FE->>U: Redirect into protected dashboard

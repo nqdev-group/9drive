@@ -4,6 +4,7 @@ dist/
 .DS_Store
 .turbo/
 .yarn/install-state.gz
+docs/.venv/
 
 # Secrets
 .env

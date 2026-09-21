@@ -1,0 +1,32 @@
+flowchart TD
+    Start(["Client sends POST /uploads<br/>multipart/form-data:<br/>filesMeta + file-0, file-1, ..."]) --> Auth{"requireAuth or<br/>requireApiKey('files:upload')<br/>valid?"}
+    Auth -- "no" --> Reject401["401 / 403<br/>reject request"]
+    Auth -- "yes" --> Parse["Busboy streams parts;<br/>parse filesMeta JSON"]
+
+    Parse --> ForEach{"For each declared file"}
+    ForEach --> Policy["Load user's UploadRoutingPolicy<br/>(most_available / round_robin / priority)"]
+
+    Policy --> Mode{"mode?"}
+    Mode -- "most_available" --> PickMax["Pick connected account with<br/>largest free space<br/>(minus bytes already reserved<br/>this request)"]
+    Mode -- "round_robin" --> PickRR["Advance persisted cursor,<br/>pick next eligible account"]
+    Mode -- "priority" --> PickPriority["Pick first account in<br/>priorityAccountIds with<br/>enough free space"]
+    Mode -. "explicit targetAccountId" .-> PickTarget["Use the requested account directly"]
+
+    PickMax --> HasSpace{"Any eligible<br/>account found?"}
+    PickRR --> HasSpace
+    PickPriority --> HasSpace
+    PickTarget --> HasSpace
+
+    HasSpace -- "no" --> RejectSpace["Reject before streaming:<br/>no account has enough free space"]
+    HasSpace -- "yes" --> Provider{"Account provider?"}
+
+    Provider -- "google_drive" --> StreamDrive["Stream file bytes directly<br/>to Google Drive files.create<br/>under root '9drive' folder"]
+    Provider -- "s3" --> StreamS3["Stream file bytes directly<br/>to S3-compatible bucket<br/>via @aws-sdk/lib-storage Upload"]
+
+    StreamDrive --> Persist["Create File row in MySQL:<br/>owner, connectedAccountId,<br/>providerFileId, folderId (virtual),<br/>mimeType, sizeBytes"]
+    StreamS3 --> Persist
+
+    Persist --> Done(["201 Created<br/>file appears in dashboard"])
+    Reject401 --> End(["Response sent"])
+    RejectSpace --> End
+    Done --> End

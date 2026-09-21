@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>9Drive — Documentation Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11/styles/github-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11/lib/common.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #161922; --panel-2: #1d212c; --border: #2a2f3b;
+    --text: #e6e8ee; --text-dim: #9aa1b1; --accent: #5b8def; --accent-2: #6ee7b7; --mark: #5b8def55;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Inter, sans-serif; background: var(--bg); color: var(--text); }
+  header { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1.25rem; background: var(--panel); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 20; }
+  header h1 { font-size: 1.05rem; margin: 0; font-weight: 600; white-space: nowrap; }
+  #search { flex: 1; max-width: 420px; padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); font-size: 0.88rem; }
+  #search:focus { outline: none; border-color: var(--accent); }
+  #menu-toggle { display: none; background: var(--panel-2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 0.4rem 0.6rem; cursor: pointer; }
+  .layout { display: flex; min-height: calc(100vh - 56px); }
+  nav.sidebar { width: 260px; flex-shrink: 0; background: var(--panel); border-right: 1px solid var(--border); padding: 0.9rem 0.75rem; overflow-y: auto; }
+  nav.sidebar h2 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin: 1rem 0 0.4rem; padding: 0 0.25rem; }
+  nav.sidebar h2:first-child { margin-top: 0; }
+  nav.sidebar button { display: block; width: 100%; text-align: left; padding: 0.55rem 0.7rem; margin-bottom: 0.25rem; background: transparent; border: 1px solid transparent; border-radius: 8px; color: var(--text-dim); cursor: pointer; font-size: 0.86rem; }
+  nav.sidebar button:hover { background: var(--panel-2); color: var(--text); }
+  nav.sidebar button.active { background: var(--panel-2); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+  nav.sidebar button.hidden { display: none; }
+  main { flex: 1; padding: 1.5rem 2rem; overflow-y: auto; max-width: 980px; }
+  .toolbar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+  .toolbar button { background: var(--panel-2); border: 1px solid var(--border); color: var(--text); padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+  .toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+  .content { line-height: 1.65; }
+  .content h1, .content h2, .content h3 { border-bottom: 1px solid var(--border); padding-bottom: 0.35rem; }
+  .content h1 { font-size: 1.6rem; } .content h2 { font-size: 1.25rem; margin-top: 2rem; } .content h3 { font-size: 1.05rem; border-bottom: none; }
+  .content code { background: var(--panel-2); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.85em; }
+  .content pre { background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem; overflow-x: auto; }
+  .content pre code { background: none; padding: 0; }
+  .content table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.9rem; }
+  .content th, .content td { border: 1px solid var(--border); padding: 0.45rem 0.65rem; text-align: left; }
+  .content th { background: var(--panel-2); }
+  .content a { color: var(--accent); }
+  .content blockquote { border-left: 3px solid var(--accent); margin: 0; padding: 0.2rem 1rem; color: var(--text-dim); }
+  .content .mermaid { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; text-align: center; }
+  mark { background: var(--mark); color: inherit; border-radius: 2px; }
+  .empty { color: var(--text-dim); padding: 3rem; text-align: center; }
+  .search-results { position: absolute; top: 3.4rem; left: 1.25rem; width: min(420px, calc(100vw - 2.5rem)); background: var(--panel); border: 1px solid var(--border); border-radius: 10px; max-height: 60vh; overflow-y: auto; z-index: 30; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+  .search-results .hit { padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .search-results .hit:hover { background: var(--panel-2); }
+  .search-results .hit .title { font-weight: 600; font-size: 0.85rem; }
+  .search-results .hit .snippet { color: var(--text-dim); font-size: 0.78rem; margin-top: 0.2rem; }
+  @media (max-width: 860px) {
+    #menu-toggle { display: inline-block; }
+    nav.sidebar { position: fixed; top: 56px; bottom: 0; left: 0; z-index: 15; transform: translateX(-100%); transition: transform 0.2s ease; box-shadow: 10px 0 30px rgba(0,0,0,0.4); }
+    nav.sidebar.open { transform: translateX(0); }
+    main { padding: 1.1rem 1.1rem; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <button id="menu-toggle" aria-label="Toggle menu">☰</button>
+  <h1>9Drive Docs</h1>
+  <input id="search" type="search" placeholder="Search documentation, specs, diagrams…" autocomplete="off">
+</header>
+<div class="layout">
+  <nav class="sidebar" id="nav"></nav>
+  <main>
+    <div class="toolbar">
+      <button id="copy-btn">Copy source</button>
+      <button id="download-btn">Download</button>
+    </div>
+    <div id="content" class="content"><div class="empty">Loading documentation…</div></div>
+  </main>
+</div>
+<div id="search-results" class="search-results" style="display:none;"></div>
+
+<script>
+mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });
+marked.setOptions({
+  highlight: (code, lang) => {
+    try { return hljs.highlight(code, { language: lang || 'plaintext' }).value; }
+    catch { return code; }
+  },
+});
+
+// Manifest — extend this list if more docs/specs/diagrams are added later.
+const MANIFEST = [
+  { group: 'Documentation', id: 'business-doc', title: 'Business Document', type: 'md', file: 'Business-Document.md' },
+  { group: 'Documentation', id: 'prd', title: 'PRD', type: 'md', file: 'PRD.md' },
+  { group: 'Diagrams', id: 'architecture', title: 'Architecture', type: 'mermaid', file: 'diagrams/architecture-diagram.mermaid' },
+  { group: 'Diagrams', id: 'workflow', title: 'Upload Workflow', type: 'mermaid', file: 'diagrams/workflow-diagram.mermaid' },
+  { group: 'Diagrams', id: 'component', title: 'Component Map', type: 'mermaid', file: 'diagrams/component-diagram.mermaid' },
+  { group: 'Diagrams', id: 'sequence', title: 'Auth Sequence', type: 'mermaid', file: 'diagrams/sequence-diagram.mermaid' },
+];
+
+const state = { active: null, sources: new Map() };
+
+const nav = document.getElementById('nav');
+const content = document.getElementById('content');
+const searchInput = document.getElementById('search');
+const searchResults = document.getElementById('search-results');
+
+function buildNav() {
+  nav.innerHTML = '';
+  const groups = [...new Set(MANIFEST.map((m) => m.group))];
+  for (const group of groups) {
+    const h = document.createElement('h2');
+    h.textContent = group;
+    nav.appendChild(h);
+    for (const item of MANIFEST.filter((m) => m.group === group)) {
+      const btn = document.createElement('button');
+      btn.textContent = item.title;
+      btn.dataset.id = item.id;
+      btn.onclick = () => selectItem(item.id);
+      nav.appendChild(btn);
+    }
+  }
+}
+
+function setActiveNav(id) {
+  for (const btn of nav.querySelectorAll('button')) btn.classList.toggle('active', btn.dataset.id === id);
+}
+
+async function fetchSource(item) {
+  if (state.sources.has(item.id)) return state.sources.get(item.id);
+  const res = await fetch(item.file);
+  if (!res.ok) throw new Error(`HTTP ${res.status} loading ${item.file}`);
+  const text = await res.text();
+  state.sources.set(item.id, text);
+  return text;
+}
+
+async function renderItem(item) {
+  const source = await fetchSource(item);
+  if (item.type === 'md') {
+    const raw = marked.parse(source);
+    content.innerHTML = DOMPurify.sanitize(raw);
+  } else if (item.type === 'mermaid') {
+    content.innerHTML = `<h1>${item.title}</h1><div class="mermaid">${source}</div>`;
+    await mermaid.run({ querySelector: '#content .mermaid' });
+  }
+}
+
+async function selectItem(id) {
+  const item = MANIFEST.find((m) => m.id === id);
+  if (!item) return;
+  state.active = id;
+  setActiveNav(id);
+  searchResults.style.display = 'none';
+  content.innerHTML = '<div class="empty">Loading…</div>';
+  document.getElementById('nav').classList.remove('open');
+  try {
+    await renderItem(item);
+  } catch (err) {
+    content.innerHTML = `<div class="empty">Failed to load ${item.file} — ${err.message}` +
+      (location.protocol === 'file:' ? '<br>This viewer must be served over http://, not opened directly as a file. Run docs/view-docs.bat (Windows) or "python3 -m http.server" from the docs/ folder.' : '') +
+      `</div>`;
+  }
+}
+
+// --- Search: preload every source once so search works instantly across all docs ---
+async function preloadAll() {
+  await Promise.all(MANIFEST.map((item) => fetchSource(item).catch(() => '')));
+}
+
+function snippet(text, query) {
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return text.slice(0, 120);
+  const start = Math.max(0, idx - 40);
+  return (start > 0 ? '…' : '') + text.slice(start, idx + query.length + 80) + '…';
+}
+
+function highlight(text, query) {
+  const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+  return text.replace(re, '<mark>$1</mark>');
+}
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.trim();
+  if (!query) { searchResults.style.display = 'none'; return; }
+  const hits = [];
+  for (const item of MANIFEST) {
+    const src = state.sources.get(item.id) || '';
+    if (item.title.toLowerCase().includes(query.toLowerCase()) || src.toLowerCase().includes(query.toLowerCase())) {
+      hits.push({ item, snip: snippet(src, query) });
+    }
+  }
+  if (hits.length === 0) {
+    searchResults.innerHTML = '<div class="hit"><div class="snippet">No matches.</div></div>';
+  } else {
+    searchResults.innerHTML = hits.map((h) => `
+      <div class="hit" data-id="${h.item.id}">
+        <div class="title">${highlight(h.item.title, query)}</div>
+        <div class="snippet">${highlight(h.snip.replace(/</g, '&lt;'), query)}</div>
+      </div>`).join('');
+    for (const el of searchResults.querySelectorAll('.hit[data-id]')) {
+      el.onclick = () => { selectItem(el.dataset.id); searchResults.style.display = 'none'; searchInput.value = ''; };
+    }
+  }
+  searchResults.style.display = 'block';
+});
+document.addEventListener('click', (e) => {
+  if (!searchResults.contains(e.target) && e.target !== searchInput) searchResults.style.display = 'none';
+});
+
+document.getElementById('menu-toggle').onclick = () => nav.classList.toggle('open');
+
+document.getElementById('copy-btn').onclick = () => {
+  if (state.active) navigator.clipboard.writeText(state.sources.get(state.active) || '');
+};
+document.getElementById('download-btn').onclick = () => {
+  if (!state.active) return;
+  const item = MANIFEST.find((m) => m.id === state.active);
+  const blob = new Blob([state.sources.get(state.active) || ''], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = item.file.split('/').pop();
+  a.click();
+};
+
+buildNav();
+preloadAll().then(() => selectItem(MANIFEST[0].id));
+</script>
+</body>
+</html>
