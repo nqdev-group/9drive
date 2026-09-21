@@ -1,5 +1,5 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# 9Router - Connect All AI Code Tools to 40+ AI Providers & 100+ Models
+# 9Drive - Self-hosted, open-source, and privacy-focused router for your applications.
 # -----------------------------------------
 # A self-hosted, open-source, and privacy-focused router for your applications.
 # GitHub: https://github.com/nqdev-group/9drive
@@ -10,9 +10,9 @@
 
 services:
 
-  backend:
+  9drive_backend:
     image: ghcr.io/nqdev-group/9drive-backend:1.0.1-manual
-    container_name: 9drive-10024
+    container_name: 9drive-backend-10024
     restart: unless-stopped
     # network_mode: host
     ports:
@@ -33,7 +33,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./data/9router-data:/app/data
+      - ./logs/backend:/app/logs
     dns:
       - 1.1.1.1
       - 1.0.0.1
@@ -55,9 +55,9 @@ services:
         reservations:
           memory: "256M" # Đảm bảo container có ít nhất 256MB RAM
 
-  frontend:
+  9drive_frontend:
     image: ghcr.io/nqdev-group/9drive-frontend:1.0.1-manual
-    container_name: 9drive-10025
+    container_name: 9drive-frontend-10025
     restart: unless-stopped
     # network_mode: host
     ports:
@@ -67,9 +67,9 @@ services:
     env_file:
       - .env
     depends_on:
-      - backend
-    volumes:
-      - ./data/9router-data:/app/data
+      - 9drive_backend
+    # volumes:
+    #   - ./data/9router-data:/app/data
     dns:
       - 1.1.1.1
       - 1.0.0.1

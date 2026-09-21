@@ -1,6 +1,7 @@
 node_modules/
 dist/
 *.log
+docker/logs/
 .DS_Store
 .turbo/
 .yarn/install-state.gz
