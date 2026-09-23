@@ -11,6 +11,7 @@ async function main() {
   const clientId = process.env.GOOGLE_CLIENT_ID
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET
   const redirectUri = process.env.GOOGLE_REDIRECT_URI ?? 'http://localhost:4000/connected-accounts/google/callback'
+	console.log("🚀 QuyNH: main -> redirectUri", redirectUri)
 
   if (!clientId || !clientSecret) throw new Error('GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET are required.')
 

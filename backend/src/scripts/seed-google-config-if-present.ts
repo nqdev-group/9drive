@@ -16,6 +16,7 @@ async function main() {
   const clientId = process.env.GOOGLE_CLIENT_ID?.trim()
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim()
   const redirectUri = process.env.GOOGLE_REDIRECT_URI?.trim() || 'http://localhost:4000/connected-accounts/google/callback'
+	console.log("🚀 QuyNH: main -> redirectUri", redirectUri)
 
   const hasClientId = isConfigured(clientId, ['your-google-client-id', 'your-client-id'])
   const hasClientSecret = isConfigured(clientSecret, ['your-google-client-secret', 'your-client-secret'])
